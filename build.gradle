@@ -8,8 +8,8 @@ version = project.plugin_version
 archivesBaseName = project.archives_base_name
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
@@ -22,14 +22,21 @@ compileJava {
     options.compilerArgs << '-parameters'
 }
 
-// Ensures latest Jingle commit
-configurations.configureEach {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+configurations {
+    // provided configuration defines configurations which should also be included in the jar
+    provided
+    implementation.extendsFrom(provided)
 }
 
 dependencies {
-    // Choose Jingle version: https://jitpack.io/#DuncanRuns/Jingle/
-    implementation 'com.github.DuncanRuns:Jingle:main-SNAPSHOT'
+    implementation 'com.github.DuncanRuns:Jingle:7aa06c9319'
+    provided('com.github.DuncanRuns:e4mcbiat:78f2f22138') {
+        exclude(group: "com.google.code.gson")
+        exclude(group: "org.apache.httpcomponents")
+        exclude(group: "commons-io")
+        exclude(group: "com.formdev")
+        exclude(group: "com.jetbrains.intellij.java")
+    }
 }
 
 
@@ -40,4 +47,10 @@ processResources {
     filesMatching("jingle.plugin.json") {
         expand "version": project.version
     }
+}
+
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from configurations.provided.asFileTree.files.collect { zipTree(it) }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', "**/module-info.*", 'me/duncanruns/e4mcbiat/gui/'
 }
