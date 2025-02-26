@@ -30,7 +30,7 @@ configurations {
 
 dependencies {
     implementation 'com.github.DuncanRuns:Jingle:7aa06c9319'
-    provided('com.github.DuncanRuns:e4mcbiat:78f2f22138') {
+    provided('com.github.DuncanRuns:e4mcbiat:60374f1f77') {
         exclude(group: "com.google.code.gson")
         exclude(group: "org.apache.httpcomponents")
         exclude(group: "commons-io")
@@ -52,5 +52,5 @@ processResources {
 jar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     from configurations.provided.asFileTree.files.collect { zipTree(it) }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', "**/module-info.*", 'me/duncanruns/e4mcbiat/gui/'
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', "**/module-info.*", 'me/duncanruns/e4mcbiat/gui/', 'me/duncanruns/e4mcbiat/Main.class'
 }
