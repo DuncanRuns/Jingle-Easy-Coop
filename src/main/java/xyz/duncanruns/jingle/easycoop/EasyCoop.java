@@ -36,13 +36,13 @@ public class EasyCoop {
     public static void initialize() {
         FOLDER.toFile().mkdirs();
         options = EasyCoopOptions.tryLoad();
-        panel = new EasyCoopPanel();
-        JingleGUI.addPluginTab("Easy Co-op", panel.mainPanel);
-
         if (!options.nlVer.isEmpty() && !Files.exists(FOLDER.resolve(options.nlJar))) {
             options.nlJar = "";
             options.nlVer = "";
         }
+
+        panel = new EasyCoopPanel();
+        JingleGUI.addPluginTab("Easy Co-op", panel.mainPanel);
 
         PluginEvents.STOP.register(EasyCoop::onJingleStop);
         Thread thread = new Thread(() -> {
@@ -61,7 +61,7 @@ public class EasyCoop {
             try {
                 e4mcClient.run();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Jingle.logError("Error while running e4mcbiat!", e);
             }
             stopE4mc();
         });
