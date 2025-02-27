@@ -12,7 +12,7 @@ those individual tools instead.
 ## Speedrun Legality
 
 NinjaLink isn't included directly in the plugin download, but can be downloaded and launched through the Easy Co-op
-plugin tab. It isn't included as NinjaLink is a tool that required legalization for runs on speedrun.com, and embedding
+plugin tab. It isn't directly included as NinjaLink is a tool that required legalization for runs on speedrun.com, and embedding
 it into the plugin would mean the plugin also requires legalization for runs on speedrun.com. Since NinjaLink has been
 legalized for runs, and Easy Co-op simply downloads and launches that same program, there is no legalization concern.
 e4mcbiat on the other hand does not require legalization, so it is embedded in the plugin and requires no additional
