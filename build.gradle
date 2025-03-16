@@ -29,7 +29,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'com.github.DuncanRuns:Jingle:7aa06c9319'
+    implementation 'com.github.DuncanRuns:Jingle:v1.1.4'
     provided('com.github.DuncanRuns:e4mcbiat:v0.2.2') {
         exclude(group: "com.google.code.gson")
         exclude(group: "org.apache.httpcomponents")
