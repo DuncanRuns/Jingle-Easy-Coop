@@ -22,6 +22,9 @@ public class EasyCoopOptions {
     public String nlRoomName = "";
     public String nlRoomPass = "";
 
+    public boolean nlQAB = false;
+    public boolean e4mcQAB = false;
+
     public static EasyCoopOptions tryLoad() {
         if (!Files.exists(PATH)) return new EasyCoopOptions();
         try {
@@ -34,7 +37,7 @@ public class EasyCoopOptions {
 
     public void trySave() {
         try {
-            FileUtil.writeString(PATH,GSON.toJson(this));
+            FileUtil.writeString(PATH, GSON.toJson(this));
         } catch (IOException e) {
             Jingle.logError("Failed to save Easy Co-op options!", e);
         }

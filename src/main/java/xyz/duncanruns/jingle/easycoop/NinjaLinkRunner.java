@@ -19,7 +19,7 @@ public class NinjaLinkRunner {
     }
 
     public static synchronized void launch(Path jarPath, String ip, String nickname, String roomName, String roomPass, Runnable onClose) throws IOException {
-        if(process != null) close();
+        if (process != null) close();
         List<String> cmd = new ArrayList<>(7);
         cmd.add(getJavaPath().toString());
         cmd.add("-jar");
@@ -30,12 +30,14 @@ public class NinjaLinkRunner {
         if (!roomPass.isEmpty()) cmd.add(roomPass);
 
         process = new ProcessBuilder(cmd).directory(jarPath.getParent().toFile()).start();
-        process.onExit().thenAccept(p -> {
-            process = null;
-            onClose.run();
-        });
+        process.onExit().thenAccept(p -> onProcessClose(onClose));
         logStream(process.getInputStream(), Level.DEBUG);
         logStream(process.getErrorStream(), Level.ERROR);
+    }
+
+    private static synchronized void onProcessClose(Runnable onClose) {
+        process = null;
+        onClose.run();
     }
 
     private static void logStream(InputStream stream, Level level) {
@@ -57,5 +59,9 @@ public class NinjaLinkRunner {
         if (process == null) return;
         process.destroy();
         process = null;
+    }
+
+    public static synchronized boolean isRunning() {
+        return process != null;
     }
 }

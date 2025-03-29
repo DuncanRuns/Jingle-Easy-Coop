@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import xyz.duncanruns.jingle.easycoop.EasyCoop;
 import xyz.duncanruns.jingle.easycoop.EasyCoopOptions;
+import xyz.duncanruns.jingle.gui.JingleGUI;
 import xyz.duncanruns.jingle.util.KeyboardUtil;
 
 import javax.swing.*;
@@ -28,6 +29,8 @@ public class EasyCoopPanel {
     private JTextField roomNameField;
     private JPasswordField roomPassField;
     private JPanel ninjaLinkLaunchPanel;
+    private JCheckBox e4mcQabBox;
+    private JCheckBox nlQabBox;
 
     private boolean ninjaLinkExists;
     private boolean ninjaLinkRunning = false;
@@ -37,14 +40,7 @@ public class EasyCoopPanel {
 
     public EasyCoopPanel() {
         EasyCoopOptions options = EasyCoop.options;
-        startStopButton.addActionListener(e -> {
-            startStopButton.setEnabled(false);
-            if (!e4mcRunning) {
-                EasyCoop.startE4mc();
-            } else {
-                EasyCoop.stopE4mc();
-            }
-        });
+        startStopButton.addActionListener(e -> onPressE4mcStart());
         copyIPButton.addActionListener(e -> {
             try {
                 KeyboardUtil.copyToClipboard(domain);
@@ -91,14 +87,7 @@ public class EasyCoopPanel {
         roomNameField.setText(options.nlRoomName);
         roomPassField.setText(options.nlRoomPass);
 
-        launchButton.addActionListener(e -> {
-            options.nlIp = addressField.getText();
-            options.nlNickname = nicknameField.getText();
-            options.nlRoomName = roomNameField.getText();
-            options.nlRoomPass = new String(roomPassField.getPassword());
-            ninjaLinkRunning = EasyCoop.launchNinjaLink();
-            updateLaunchButton();
-        });
+        launchButton.addActionListener(e -> onPressNlLaunch());
         updateLaunchButton();
 
 
@@ -120,6 +109,27 @@ public class EasyCoopPanel {
                 }
             });
         }
+
+        e4mcQabBox.setSelected(options.e4mcQAB);
+        nlQabBox.setSelected(options.nlQAB);
+        e4mcQabBox.addActionListener(e -> {
+            options.e4mcQAB = e4mcQabBox.isSelected();
+            JingleGUI.get().refreshQuickActions();
+        });
+        nlQabBox.addActionListener(e -> {
+            options.nlQAB = nlQabBox.isSelected();
+            JingleGUI.get().refreshQuickActions();
+        });
+    }
+
+    public void onPressNlLaunch() {
+        EasyCoopOptions options = EasyCoop.options;
+        options.nlIp = addressField.getText();
+        options.nlNickname = nicknameField.getText();
+        options.nlRoomName = roomNameField.getText();
+        options.nlRoomPass = new String(roomPassField.getPassword());
+        ninjaLinkRunning = EasyCoop.launchNinjaLink();
+        updateLaunchButton();
     }
 
     {
@@ -140,7 +150,7 @@ public class EasyCoopPanel {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(1, 3, new Insets(5, 5, 5, 5), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setHorizontalAlignment(0);
@@ -156,6 +166,9 @@ public class EasyCoopPanel {
         setMCPortButton = new JButton();
         setMCPortButton.setText("Set MC Port");
         panel1.add(setMCPortButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        e4mcQabBox = new JCheckBox();
+        e4mcQabBox.setText("Quick Action Button");
+        panel1.add(e4mcQabBox, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         separator1.setOrientation(1);
         mainPanel.add(separator1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -166,7 +179,7 @@ public class EasyCoopPanel {
         label2.setText("NinjaLink");
         panel2.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         ninjaLinkLaunchPanel = new JPanel();
-        ninjaLinkLaunchPanel.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        ninjaLinkLaunchPanel.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
         ninjaLinkLaunchPanel.setEnabled(true);
         panel2.add(ninjaLinkLaunchPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
@@ -192,6 +205,9 @@ public class EasyCoopPanel {
         ninjaLinkLaunchPanel.add(roomNameField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         roomPassField = new JPasswordField();
         ninjaLinkLaunchPanel.add(roomPassField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        nlQabBox = new JCheckBox();
+        nlQabBox.setText("Quick Action Button");
+        ninjaLinkLaunchPanel.add(nlQabBox, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         downloadButton = new JButton();
         downloadButton.setText("Download");
         panel2.add(downloadButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -249,5 +265,14 @@ public class EasyCoopPanel {
         if (roomName.isEmpty()) return roomPass.isEmpty();
         if (!NAME_PATTERN.matcher(roomName).matches()) return false;
         return PASSWORD_PATTERN.matcher(roomPass).matches();
+    }
+
+    public void onPressE4mcStart() {
+        startStopButton.setEnabled(false);
+        if (!e4mcRunning) {
+            EasyCoop.startE4mc();
+        } else {
+            EasyCoop.stopE4mc();
+        }
     }
 }
