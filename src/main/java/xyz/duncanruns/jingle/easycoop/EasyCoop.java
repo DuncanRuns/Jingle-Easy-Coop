@@ -40,21 +40,31 @@ public class EasyCoop {
     public static void initialize() {
         FOLDER.toFile().mkdirs();
         options = EasyCoopOptions.tryLoad();
-        if (!options.nlVer.isEmpty() && !Files.exists(FOLDER.resolve(options.nlJar))) {
-            options.nlJar = "";
-            options.nlVer = "";
-        }
 
-        panel = new EasyCoopPanel();
-        JingleGUI.addPluginTab("Easy Co-op", panel.mainPanel);
+        initCheckNinjaLinkRemoved();
+        initPanel();
+        initQabs();
+        initNinjaLinkUpdateChecker();
 
+        PluginEvents.STOP.register(EasyCoop::onJingleStop);
+    }
+
+    private static void initNinjaLinkUpdateChecker() {
+        Thread thread = new Thread(() -> {
+            NinjaLinkMeta ninjaLinkMeta = NinjaLinkMeta.get();
+            if (ninjaLinkMeta == null || Objects.equals(options.nlVer, ninjaLinkMeta.latest)) return;
+            swingvokeAndWait(() -> panel.onUpdateAvailable());
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private static void initQabs() {
         nlQab = JingleGUI.makeButton("Launch NinjaLink", panel::onPressNlLaunch, () -> JingleGUI.get().openTab(panel.mainPanel), "Right click to configure...", true);
         e4mcQab = JingleGUI.makeButton("Start e4mc", () -> {
             if (e4mcClient == null) startedFromQAB = true;
             panel.onPressE4mcStart();
         }, () -> JingleGUI.get().openTab(panel.mainPanel), "Right click to configure...", true);
-
-        PluginEvents.STOP.register(EasyCoop::onJingleStop);
         JingleGUI.get().registerQuickActionButton(-1, () -> {
             if (!options.nlQAB) return null;
             if (options.nlJar.isEmpty()) return null;
@@ -64,14 +74,18 @@ public class EasyCoop {
             if (!options.e4mcQAB) return null;
             return e4mcQab;
         });
+    }
 
-        Thread thread = new Thread(() -> {
-            NinjaLinkMeta ninjaLinkMeta = NinjaLinkMeta.get();
-            if (ninjaLinkMeta == null || Objects.equals(options.nlVer, ninjaLinkMeta.latest)) return;
-            swingvokeAndWait(() -> panel.onUpdateAvailable());
-        });
-        thread.setDaemon(true);
-        thread.start();
+    private static void initPanel() {
+        panel = new EasyCoopPanel();
+        JingleGUI.addPluginTab("Easy Co-op", panel.mainPanel);
+    }
+
+    private static void initCheckNinjaLinkRemoved() {
+        if (!options.nlVer.isEmpty() && !Files.exists(FOLDER.resolve(options.nlJar))) {
+            options.nlJar = "";
+            options.nlVer = "";
+        }
     }
 
     public static synchronized void startE4mc() {
@@ -82,17 +96,7 @@ public class EasyCoop {
             e4mcClient = new E4mcClient(domain -> swingvokeAndWait(() -> {
                 panel.onE4mcStarted(domain);
                 e4mcQab.setEnabled(true);
-                if (startedFromQAB) {
-                    int ans = JOptionPane.showOptionDialog(panel.mainPanel, "e4mc has started", "Jingle Easy Co-op: e4mc started", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Copy Address", "Ok"}, "Copy Address");
-                    if (ans == 0) {
-                        try {
-                            KeyboardUtil.copyToClipboard(domain);
-                        } catch (Exception e) {
-                            JOptionPane.showMessageDialog(panel.mainPanel, "Failed to copy to clipboard: " + e, "Jingle Easy Co-op: Failed to copy", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                }
-                startedFromQAB = false;
+                checkCopyAddressPopup(domain);
             }), msg -> Jingle.log(Level.INFO, "E4mc Broadcast: " + msg));
             try {
                 e4mcClient.run();
@@ -103,6 +107,20 @@ public class EasyCoop {
         });
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private static void checkCopyAddressPopup(String domain) {
+        if (startedFromQAB) {
+            int ans = JOptionPane.showOptionDialog(panel.mainPanel, "e4mc has started", "Jingle Easy Co-op: e4mc started", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[]{"Copy Address", "Ok"}, "Copy Address");
+            if (ans == 0) {
+                try {
+                    KeyboardUtil.copyToClipboard(domain);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(panel.mainPanel, "Failed to copy to clipboard: " + e, "Jingle Easy Co-op: Failed to copy", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        startedFromQAB = false;
     }
 
     public static synchronized void stopE4mc() {
