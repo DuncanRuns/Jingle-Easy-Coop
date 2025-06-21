@@ -169,6 +169,10 @@ public class EasyCoop {
             GrabUtil.download(meta.latest_download, FOLDER.resolve(jarName));
         } catch (IOException e) {
             Jingle.logError("Failed to download NinjaLink!", e);
+            swingvokeAndWait(() -> {
+                panel.onUpdateAvailable();
+                JOptionPane.showMessageDialog(panel.mainPanel, "Failed to download NinjaLink: " + e, "Jingle Easy Co-op: Failed to download", JOptionPane.ERROR_MESSAGE);
+            });
             return;
         }
         options.nlJar = jarName;

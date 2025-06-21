@@ -236,6 +236,7 @@ public class EasyCoopPanel {
     }
 
     public void onUpdateAvailable() {
+        downloadButton.setText(ninjaLinkExists ? "Update" : "Download");
         downloadButton.setVisible(true);
         downloadButton.setEnabled(true);
     }
