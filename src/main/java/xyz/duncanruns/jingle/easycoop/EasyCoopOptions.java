@@ -17,7 +17,7 @@ public class EasyCoopOptions {
 
     public String nlJar = "";
     public String nlVer = "";
-    public String nlIp = "ninjalink.duncanruns.xyz";
+    public String nlAddress = "";
     public String nlNickname = "";
     public String nlRoomName = "";
     public String nlRoomPass = "";
@@ -41,5 +41,9 @@ public class EasyCoopOptions {
         } catch (IOException e) {
             Jingle.logError("Failed to save Easy Co-op options!", e);
         }
+    }
+
+    public String getNLAddress() {
+        return nlAddress.trim().isEmpty() ? EasyCoop.DEFAULT_NL_ADDRESS : nlAddress;
     }
 }

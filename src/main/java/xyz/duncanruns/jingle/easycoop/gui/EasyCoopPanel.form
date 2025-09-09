@@ -126,7 +126,7 @@
                   <text value="Room Password:"/>
                 </properties>
               </component>
-              <component id="7bbd6" class="javax.swing.JTextField" binding="addressField">
+              <component id="7bbd6" class="javax.swing.JTextField" binding="addressField" custom-create="true">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>

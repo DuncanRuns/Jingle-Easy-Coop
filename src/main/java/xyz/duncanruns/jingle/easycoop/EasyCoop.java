@@ -22,6 +22,7 @@ import java.util.Objects;
 
 public class EasyCoop {
     public static final Path FOLDER = Jingle.FOLDER.resolve("easy-coop");
+    public static final String DEFAULT_NL_ADDRESS = "wss://ninjalink.duncanruns.xyz:52536";
     public static EasyCoopOptions options = new EasyCoopOptions();
     private static EasyCoopPanel panel;
     private static JButton nlQab;
@@ -187,7 +188,7 @@ public class EasyCoop {
     public static boolean launchNinjaLink() {
         try {
             nlQab.setEnabled(false);
-            NinjaLinkRunner.launch(FOLDER.resolve(options.nlJar), options.nlIp, options.nlNickname, options.nlRoomName, options.nlRoomPass, () -> {
+            NinjaLinkRunner.launch(FOLDER.resolve(options.nlJar), options.nlAddress, options.nlNickname, options.nlRoomName, options.nlRoomPass, () -> {
                 nlQab.setEnabled(true);
                 panel.onNinjaLinkClosed();
             });
